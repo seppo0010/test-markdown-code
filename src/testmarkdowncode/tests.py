@@ -7,6 +7,7 @@ from . import TestMarkdownCode
 def multitrim(s):
     return re.sub(r'^\s+', '', s, 0, re.M)
 
+
 def create_template(lang, code, result):
     return multitrim('''
     ```{lang}
@@ -18,6 +19,13 @@ def create_template(lang, code, result):
     ''').format(lang=lang, code=code, result=result)
 
 
+def easy_py():
+    return create_template(
+        'py',
+        'print(2)',
+        '2',
+    )
+
 class TestTestMarkdownCode(unittest.TestCase):
     def run_tests(self, code, expected_tests):
         tests = TestMarkdownCode.find_tests(code)
@@ -26,11 +34,7 @@ class TestTestMarkdownCode(unittest.TestCase):
         self.assertEqual(expected_tests, len(tests))
 
     def test_py(self):
-        self.run_tests(create_template(
-            'py',
-            'print(2)',
-            '2',
-        ), 1)
+        self.run_tests(easy_py(), 1)
 
     def test_js(self):
         self.run_tests(create_template(
@@ -50,11 +54,7 @@ class TestTestMarkdownCode(unittest.TestCase):
         My example 2
         {}
         ''').format(
-            create_template(
-                'py',
-                'print(2)',
-                '2',
-            ),
+            easy_py(),
             create_template(
                 'js',
                 'console.log(3)',
@@ -84,10 +84,6 @@ class TestTestMarkdownCode(unittest.TestCase):
 
     def test_ignore_incomplete(self):
         self.run_tests(multitrim('''
-        <!-- tmc
-        1
-        -->
-
         No expected:
         ```py
         print(1)
@@ -103,8 +99,12 @@ class TestTestMarkdownCode(unittest.TestCase):
         '''), 0)
 
     def test_not_ascii(self):
-        self.run_tests('ħ€łłø\n' + create_template(
-            'py',
-            'print(2)',
-            '2',
-        ), 1)
+        self.run_tests('ħ€łłø\n' + easy_py(), 1)
+
+    def test_after_incomplete(self):
+        self.run_tests(multitrim('''
+        ```py
+        print(1)
+        ```
+
+        ''' + easy_py()), 1)

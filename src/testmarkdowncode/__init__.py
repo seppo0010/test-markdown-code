@@ -21,10 +21,15 @@ class TestMarkdownCode(unittest.TestCase):
 
     @staticmethod
     def find_tests(markdown):
-        return re.findall(
-            r'^```(.*?)\n(.*?)```\n<\!--\s+tmc(.*?)-->',
-            markdown, re.M|re.S
-        )
+        return [
+            (lang, code, expected)
+            for (lang, code, expected)
+            in re.findall(
+                r'^```(.*?)?\n(.*?)?```(?:\n<\!--\s+tmc(.*?)-->)?',
+                markdown, re.M|re.S
+            )
+            if '' not in (lang, code, expected)
+        ]
 
     @staticmethod
     def create_tests(markdown):
