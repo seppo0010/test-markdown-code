@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+import hashlib
+import re
+import subprocess
+import sys
+import unittest
+
+class TestMarkdownCode(unittest.TestCase):
+    tests = []
+
+    @staticmethod
+    def create_test(lang, code, expected):
+        def test(self):
+            if lang == 'py':
+                output = subprocess.check_output(('python', '-c', code)).decode('utf8')
+            elif lang == 'js':
+                output = subprocess.check_output(('nodejs', '-e', code)).decode('utf8')
+            else:
+                raise ValueError('unsupported language {}'.format(lang))
+            self.assertEqual(output.strip(), expected.strip())
+        return test
+
+    @staticmethod
+    def create_tests(markdown):
+        for (lang, code, expected) in re.findall(
+                r'^```(.*?)\n(.*?)```\n<\!--\s+tmc(.*?)-->',
+                markdown, re.M|re.S
+        ):
+            test = 'test_{}'.format(hashlib.sha1(code.encode('utf8')).hexdigest())
+            setattr(TestMarkdownCode, test, TestMarkdownCode.create_test(lang, code, expected))
+            TestMarkdownCode.tests.append(test)
+
+    @staticmethod
+    def load_tests(test_cases):
+        for test in TestMarkdownCode.tests:
+            test_cases.addTest(TestMarkdownCode(test))
+
+
+def load_tests(loader, tests, pattern):
+    test_cases = unittest.TestSuite()
+    TestMarkdownCode.load_tests(test_cases)
+    return test_cases
+
+if __name__ == '__main__':
+    for filename in sys.argv[1:]:
+        if filename == '-':
+            TestMarkdownCode.create_tests(sys.stdin.read())
+        else:
+            with open(filename) as fp:
+                TestMarkdownCode.create_tests(fp.read())
+    unittest.main(argv=sys.argv[:1])
