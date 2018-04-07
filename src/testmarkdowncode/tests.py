@@ -101,3 +101,10 @@ class TestTestMarkdownCode(unittest.TestCase):
         1
         -->
         '''), 0)
+
+    def test_not_ascii(self):
+        self.run_tests('ħ€łłø\n' + create_template(
+            'py',
+            'print(2)',
+            '2',
+        ), 1)
