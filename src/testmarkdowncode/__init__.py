@@ -12,6 +12,8 @@ class TestMarkdownCode(unittest.TestCase):
         def test(self):
             if lang == 'py':
                 output = subprocess.check_output(('python', '-c', code)).decode('utf8')
+            elif lang == 'py3':
+                output = subprocess.check_output(('python3', '-c', code)).decode('utf8')
             elif lang == 'js':
                 output = subprocess.check_output(('nodejs', '-e', code)).decode('utf8')
             else:
