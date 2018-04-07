@@ -28,7 +28,7 @@ class TestMarkdownCode(unittest.TestCase):
 
     @staticmethod
     def create_tests(markdown):
-        for (lang, code, expected) in self.find_tests(markdown):
+        for (lang, code, expected) in TestMarkdownCode.find_tests(markdown):
             test = 'test_{}'.format(hashlib.sha1((lang+code+expected).encode('utf8')).hexdigest())
             setattr(TestMarkdownCode, test, TestMarkdownCode.get_test(lang, code, expected))
             TestMarkdownCode.tests.append(test)
