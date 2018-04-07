@@ -69,3 +69,35 @@ class TestTestMarkdownCode(unittest.TestCase):
                 'print(2)',
                 '3',
             ), 1)
+
+    def test_unsupported_language(self):
+        with self.assertRaises(ValueError):
+            self.run_tests(multitrim('''
+                No expected:
+                ```wat
+                print(1)
+                ```
+                <!-- tmc
+                1
+                -->
+            '''), 0)
+
+    def test_ignore_incomplete(self):
+        self.run_tests(multitrim('''
+        <!-- tmc
+        1
+        -->
+
+        No expected:
+        ```py
+        print(1)
+        ```
+
+        Unlabeled expected:
+        ```py
+        print(1)
+        ```
+        <!--
+        1
+        -->
+        '''), 0)
