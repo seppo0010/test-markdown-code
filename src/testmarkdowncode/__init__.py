@@ -16,6 +16,7 @@ class TestMarkdownCode(unittest.TestCase):
                 output = subprocess.check_output(('nodejs', '-e', code)).decode('utf8')
             else:
                 raise ValueError('unsupported language {}'.format(lang))
+            self.longMessage = True
             self.assertEqual(output.strip(), expected.strip(), 'Running\n{}'.format(code))
         return test
 
