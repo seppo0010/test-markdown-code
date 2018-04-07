@@ -1,5 +1,7 @@
 # Test Markdown Code
 
+[![Build Status](https://travis-ci.org/seppo0010/test-markdown-code.svg?branch=master)](https://travis-ci.org/seppo0010/test-markdown-code)
+
 Test your markdown files' code
 
 ## Example
